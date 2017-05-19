@@ -76,19 +76,15 @@ run `bitbake edison-image`
 `cd ~/src/edison-src`  
 `sudo nano meta-intel-edison/utils/create-debian-image.sh`  
 
-1. Change the line `build_dir=$top_repo_dir/build` to `build_dir=$top_repo_dir/out/linux64/build  `
+1. Change `build_dir=$top_repo_dir/build` to `build_dir=$top_repo_dir/out/linux64/build  `
 
-2. ``fsize=$((`stat --printf="%s" toFlash/edison-image-edison.ext4` / 524288))`` to ``fsize=$((`stat --printf="%s" toFlash/edison-image-edison.ext4` / 524288 * 2)) ``
+2. Change ``fsize=$((`stat --printf="%s" toFlash/edison-image-edison.ext4` / 524288))`` to ``fsize=$((`stat --printf="%s" toFlash/edison-image-edison.ext4` / 524288 * 2)) ``
 
 3. `$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-image-3.10.17-poky-edison+_1.0-r2_i386.deb
-$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-3.10.17-poky-edison+_1.0-r2_i386.deb`
-
-to
-
-`$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-image-3.10.98-poky-edison+_1.0-r2_i386.deb
+$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-3.10.17-poky-edison+_1.0-r2_i386.deb` to `$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-image-3.10.98-poky-edison+_1.0-r2_i386.deb
 $CHROOTCMD dpkg -i /tmp/deb/edison/kernel-3.10.98-poky-edison+_1.0-r2_i386.deb`
 
-4. Finally, we cleared all the mistakes in the scripts.
+Finally, we cleared all the mistakes in the scripts.
 
 `sudo ./meta-intel-edison/utils/create-debian-image.sh`
 
