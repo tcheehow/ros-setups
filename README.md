@@ -12,15 +12,15 @@ It takes about 4-5 hours build time depending on number of CPU cores.
 
 ## References
 
-https://communities.intel.com/thread/110217
-https://jakehewitt.github.io/custom-edison-image/
-http://www.hackgnar.com/2016/02/building-debian-linux-for-intel-edison.html
+1. [How to Build Debian Image for Edison](https://communities.intel.com/thread/110217 "Intel")
+2. [Building Debian Linux for Intel Edison](http://www.hackgnar.com/2016/02/building-debian-linux-for-intel-edison.html "Hackgnar")
+3. [Building a Custom Debian Image for the Intel Edison](https://jakehewitt.github.io/custom-edison-image/ "JakeHewitt")
 
 ## Create a Directory for Building the Images
 
-`cd ~
-mkdir -p ~/src/edison
-cd ~/src/edison`
+`cd ~`  
+`mkdir -p ~/src/edison`  
+`cd ~/src/edison`  
 
 ## Install Build Dependencies
 
@@ -38,8 +38,8 @@ cd ~/src/edison`
 
 Create two resource directories so we can rebuild the images without fetching support file twice
 
-`mkdir bitbake_download_dir`
-`mkdir bitbake_sstate_dir`
+`mkdir bitbake_download_dir`  
+`mkdir bitbake_sstate_dir`  
 
 To take advantage of parallelization, change `parallel_make` and `bb_number_thread` to equal to the number of cores available.
 
@@ -47,23 +47,22 @@ To take advantage of parallelization, change `parallel_make` and `bb_number_thre
 
 ## Setup Enviroment Variables
 
-`cd out/linux64
-source poky/oe-init-build-env`
+`cd out/linux64`  
+`source poky/oe-init-build-env`  
 
 ## Edit Some Errors
 
-`sudo nano ~/src/edison/edison-src/linux64/poky/meta-intel-iot-middleware/recipes-connectivity/paho-mqtt/paho-mqtt_3.1.bb`
+1. paho-mqtt_3.1.bb
+`sudo nano ~/src/edison/edison-src/linux64/poky/meta-intel-iot-middleware/recipes-connectivity/paho-mqtt/paho-mqtt_3.1.bb`  
 
-and change SRC_URI from `git://git.eclipse.org/gitroot/paho/org.eclipse.paho.mqtt.c.git` to `git://github.com/eclipse/paho.mqtt.c.git`
+and change SRC_URI from `git://git.eclipse.org/gitroot/paho/org.eclipse.paho.mqtt.c.git` to `git://github.com/eclipse/paho.mqtt.c.git`  
 
-Next,
-
+2. edison-images.bb
 `sudo nano ~/src/edison/edison-src/meta-intel-edison/meta-intel-edison-distro/recipes-core/images/edison-images.bb`
 
 Comment the following lines
-
-`IMAGE_INSTALL += "iotkit-comm-js"
-IMAGE_INSTALL += "iotkit-comm-c-dev"`
+`IMAGE_INSTALL += "iotkit-comm-js"`  
+`IMAGE_INSTALL += "iotkit-comm-c-dev"`  
 
 
 ## Building the Image (Part 1)
@@ -74,16 +73,14 @@ run `bitbake edison-image`
 
 ## Building the Image (Part 2)
 
-`cd ~/src/edison-src`
-`sudo nano meta-intel-edison/utils/create-debian-image.sh`
+`cd ~/src/edison-src`  
+`sudo nano meta-intel-edison/utils/create-debian-image.sh`  
 
-Change the line `build_dir=$top_repo_dir/build` to `build_dir=$top_repo_dir/out/linux64/build  `
+1. Change the line `build_dir=$top_repo_dir/build` to `build_dir=$top_repo_dir/out/linux64/build  `
 
-This ``fsize=$((`stat --printf="%s" toFlash/edison-image-edison.ext4` / 524288))`` to ``fsize=$((`stat --printf="%s" toFlash/edison-image-edison.ext4` / 524288 * 2)) ``
+2. ``fsize=$((`stat --printf="%s" toFlash/edison-image-edison.ext4` / 524288))`` to ``fsize=$((`stat --printf="%s" toFlash/edison-image-edison.ext4` / 524288 * 2)) ``
 
-And from
-
-`$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-image-3.10.17-poky-edison+_1.0-r2_i386.deb
+3. `$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-image-3.10.17-poky-edison+_1.0-r2_i386.deb
 $CHROOTCMD dpkg -i /tmp/deb/edison/kernel-3.10.17-poky-edison+_1.0-r2_i386.deb`
 
 to
@@ -91,7 +88,7 @@ to
 `$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-image-3.10.98-poky-edison+_1.0-r2_i386.deb
 $CHROOTCMD dpkg -i /tmp/deb/edison/kernel-3.10.98-poky-edison+_1.0-r2_i386.deb`
 
-Finally, we cleared all the mistakes in the scripts.
+4. Finally, we cleared all the mistakes in the scripts.
 
 `sudo ./meta-intel-edison/utils/create-debian-image.sh`
 
