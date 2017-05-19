@@ -53,16 +53,15 @@ To take advantage of parallelization, change `parallel_make` and `bb_number_thre
 ## Edit Some Errors
 
 1. paho-mqtt_3.1.bb
-`sudo nano ~/src/edison/edison-src/linux64/poky/meta-intel-iot-middleware/recipes-connectivity/paho-mqtt/paho-mqtt_3.1.bb`  
-
-and change SRC_URI from `git://git.eclipse.org/gitroot/paho/org.eclipse.paho.mqtt.c.git` to `git://github.com/eclipse/paho.mqtt.c.git`  
+..`sudo nano ~/src/edison/edison-src/linux64/poky/meta-intel-iot-middleware/recipes-connectivity/paho-mqtt/paho-mqtt_3.1.bb`  
+..and change SRC_URI from ..`git://git.eclipse.org/gitroot/paho/org.eclipse.paho.mqtt.c.git`
+..to `git://github.com/eclipse/paho.mqtt.c.git`  
 
 2. edison-images.bb
-`sudo nano ~/src/edison/edison-src/meta-intel-edison/meta-intel-edison-distro/recipes-core/images/edison-images.bb`
-
-Comment the following lines
-`IMAGE_INSTALL += "iotkit-comm-js"`  
-`IMAGE_INSTALL += "iotkit-comm-c-dev"`  
+..`sudo nano ~/src/edison/edison-src/meta-intel-edison/meta-intel-edison-distro/recipes-core/images/edison-images.bb`
+..Comment the following lines
+..`IMAGE_INSTALL += "iotkit-comm-js"`  
+..`IMAGE_INSTALL += "iotkit-comm-c-dev"`  
 
 
 ## Building the Image (Part 1)
@@ -80,8 +79,9 @@ run `bitbake edison-image`
 
 2. Change ``fsize=$((`stat --printf="%s" toFlash/edison-image-edison.ext4` / 524288))`` to ``fsize=$((`stat --printf="%s" toFlash/edison-image-edison.ext4` / 524288 * 2)) ``
 
-3. `$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-image-3.10.17-poky-edison+_1.0-r2_i386.deb
-$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-3.10.17-poky-edison+_1.0-r2_i386.deb` to `$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-image-3.10.98-poky-edison+_1.0-r2_i386.deb
+3. Change `$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-image-3.10.17-poky-edison+_1.0-r2_i386.deb
+$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-3.10.17-poky-edison+_1.0-r2_i386.deb`
+..to `$CHROOTCMD dpkg -i /tmp/deb/edison/kernel-image-3.10.98-poky-edison+_1.0-r2_i386.deb
 $CHROOTCMD dpkg -i /tmp/deb/edison/kernel-3.10.98-poky-edison+_1.0-r2_i386.deb`
 
 Finally, we cleared all the mistakes in the scripts.
