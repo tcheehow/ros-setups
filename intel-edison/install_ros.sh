@@ -10,10 +10,11 @@ fi
 
 echo "*** Update sources.list ***"
 
-sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu wheezy main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu jessie main" > /etc/apt/sources.list.d/ros-latest.list'
 
 echo "*** Get ROS and Raspian keys ***"
-wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
+sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+#wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
 wget http://archive.raspbian.org/raspbian.public.key -O - | sudo apt-key add -
 
 echo "*** Update the OS ***"
@@ -64,7 +65,7 @@ echo "*** Install cmake and update sources.list ***"
 mkdir ~/ros_catkin_ws/external_src
 sudo apt-get -y install checkinstall cmake
 sudo sh -c 'echo "deb-src http://mirrordirector.raspbian.org/raspbian/ testing main contrib non-free rpi" >> /etc/apt/sources.list'
-#sudo sh -c 'echo "deb http://http.debian.net/debian wheezy-backports main" >> /etc/apt/sources.list'
+#sudo sh -c 'echo "deb http://http.debian.net/debian jessie-backports main" >> /etc/apt/sources.list'
 sudo apt-get -y update
 
 echo "*** Install console bridge ***"
@@ -79,7 +80,7 @@ sudo apt-get -y install liblz4-dev
 echo "*** rosdep install - Errors at the end are normal ***"
 cd ~/ros_catkin_ws
 #  Python errors after the following command are normal.
-rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:wheezy
+rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:jessie
 
 echo “******************************************************************”
 echo “About to start some heavy building. Go have a looong coffee break.”

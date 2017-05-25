@@ -6,14 +6,12 @@ Before starting with the installation it's a good idea to boot the Edison straig
 
 Connect one USB cable to the cosole port and then start your temrminal app (see next section for more information on this). Once you are connected plug in the second USB cable for power and after 15 seconds you should see the system booting. If you want to login the user name is root (no password).
 
-# Flash Ubilinux
+# Flash Debian
 
-To flash Ubilinux carefully follow the instruction here https://learn.sparkfun.com/tutorials/loading-debian-ubilinux-on-the-edison
+To build Debian Jessie carefully follow the instruction from ros-setups/README.md
 
-However, the link for dfu-util is outdated. Download the latest version from this page:
+If Windows is used, dfu-util is required. Download the latest version from this page:
 http://dfu-util.sourceforge.net/releases/
-
-The Ubilinux image can be downloaded from this page: http://www.emutexlabs.com/ubilinux and click on "ubilinux for Edison"
 
 Make sure you have the console USB cable in place and use it so you know when the installation has finished. You MUST NOT remove power before it’s done or it could be bricked. If you don't have a console connection make sure you wait 2 minutes at the end of the installation as it instructs. During this time it is completing the installion which shoudln't be interrupted. If you don't get any update on your console after this message is displayed restart your console terminal connection.
 
@@ -24,8 +22,8 @@ Connect to the console with 115000 8N1, for example:
 and login as root (password: edison)
 
 
-## Post Ubilinux Install
-After Ubilinux has been installed you will end up with the following partitions:
+## Post Debian Install
+After Debian has been installed you will end up with the following partitions:
 
 ```
 Filesystem       Size  Used Avail Use% Mounted on
@@ -38,6 +36,12 @@ tmpfs            193M     0  193M   0% /run/shm
 tmpfs            481M     0  481M   0% /tmp
 /dev/mmcblk0p7    32M  5.3M   27M  17% /boot
 /dev/mmcblk0p10  1.3G  2.0M  1.3G   1% /home
+```
+
+For some reasons, the /home partition is not mounted after the first boot. To  fix this issue, add the follow to the bottom of `/etc/fstab`  
+
+```
+/dev/disk/by-partlabel/home     /home       auto    noauto,comment=systemd.automount,nosuid,nodev,noatime,discard     1   1
 ```
 
 ## Post ROS Install
@@ -62,8 +66,13 @@ tmpfs            481M  6.6M  474M   2% /tmp
 
 You will need more space on the root partition. Run the following commands:
 
-`mv /var/cache /home/`
-`ln -s /home/cache /var/cache`
+`mv /var/cache /home/`  
+`ln -s /home/cache /var/cache`  
+
+and
+
+`mv /usr/share /home/`  
+`ln -s /home/share /var/share`  
 
 ## Wifi
 
@@ -82,14 +91,14 @@ Run: `ifup wlan0`
 
 If you want to use a static IP then your config will look something like this:
 ```
-auto wlan0
-iface wlan0 inet static
-    # For WPA
-    wpa-ssid <your-ssid>
-    wpa-psk <your-ssid-psk>
+# interfaces(5) file used by ifup(8) and ifdown(8)
+auto lo  
+iface lo inet loopback
 
-    address 192.168.43.101
-    netmask 255.255.255.0
+auto wlan0  
+iface wlan0 inet dhcp  
+    wpa-ssid ExampleWifi
+    wpa-psk 81088ba3b4b387ea4d22a4ad369ffa42f4966d2f3d61f6c65cdc001460239dc4
 ```
 
 Create script `sudo nano ~/homenet.sh` and `sudo nano ~/worknet.sh`
@@ -109,6 +118,24 @@ ifup wlan0
 For the remaining steps you may wish to login via ssh instead.
 
 ## Update
+
+Add the following to the sources list (/etc/apt/sources.list)
+
+```
+deb http://ftp.sg.debian.org/debian jessie main contrib non-free
+#deb-src http://http.debian.net/debian jessie main contrib non-free
+
+deb http://ftp.sg.debian.org/debian jessie-updates main contrib non-free
+#deb-src http://http.debian.net/debian jessie-updates main contrib non-free
+
+deb http://security.debian.org/ jessie/updates main contrib non-free
+#deb-src http://security.debian.org/ jessie/updates main contrib non-free
+
+#deb http://ubilinux.org/edison wheezy main
+
+deb http://ftp.sg.debian.org/debian jessie-backports main
+```
+
 ```
 apt-get -y update
 apt-get -y upgrade
@@ -116,6 +143,7 @@ apt-get -y upgrade
 
 ## Locales
 ```
+apt-get install locales
 dpkg-reconfigure locales # Select only en_US.UTF8 and select None as the default on the confirmation page that follows.
 update-locale
 ```
@@ -124,6 +152,11 @@ Update the `/etc/default/locale` file and ensure `LANG=en_US.UTF-8` and it uncom
 Note that if you receive warning messages about missing or wrong languages this is likely to be due to the locale being forwarded when using SSH. Either ignore them or complete this step via the serial console by commenting out the SendEnv LANG LC_* line in the local /etc/ssh/ssh_config file on your machine (not the Edison).
 
 ## Timezone
+
+`sudo apt-get install ntp`
+
+`sudo nano /etc/ntp.conf` and change `server 0.debian.pool.ntp.org` to `server 0.sg.pool.ntp.org`
+
 `sudo dpkg-reconfigure tzdata`
 
 ## Tools
@@ -153,7 +186,7 @@ As ROS packages for the Edison/Ubilinux don't exist we will have to build it fro
 A script has been writen to automate the building and installation of ROS. Current testing has been copy-pasting line by line to the console. Willing testers are encouraged to try out running the script:
 
 ```
-git clone https://github.com/UAVenture/ros-setups
+git clone https://github.com/tcheehow/ros-setups
 cd ros-setups/intel-edison/
 ./install_ros.sh
 ```
