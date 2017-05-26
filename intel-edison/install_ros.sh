@@ -28,6 +28,10 @@ sudo apt-get -y install python-setuptools python-pip python-yaml python-argparse
 echo "*** Install required ROS packages ***"
 sudo pip install rosdep rosinstall_generator wstool rosinstall
 
+echo "*** Fix some permission issues"
+cd ~
+sudo chown -R px4 .
+
 echo "*** ROSDEP ***"
 sudo rosdep init
 rosdep update
@@ -42,18 +46,7 @@ rosinstall_generator ros_comm mavros --rosdistro indigo --deps --wet-only --excl
 
 echo "*** wstool ***"
 sudo wstool init src -j3 indigo-ros_comm-wet.rosinstall
-while [ $? != 0 ]; do
-  echo "*** wstool - download failures, retrying ***"
-  sudo wstool update -t src -j3
-done
 
-echo "*** mavros and mavlink ***"
-rosinstall_generator --upstream mavros --rosdistro indigo > mavros.rosinstall
-rosinstall_generator mavlink --rosdistro indigo > mavlink.rosinstall
-
-echo "*** wstool merge ***"
-sudo wstool merge -t src mavros.rosinstall
-sudo wstool merge -t src mavlink.rosinstall
 while [ $? != 0 ]; do
   echo "*** wstool - download failures, retrying ***"
   sudo wstool update -t src -j3
@@ -87,12 +80,15 @@ echo “About to start some heavy building. Go have a looong coffee break.”
 echo “******************************************************************”
 
 echo "*** Building ROS ***"
-sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /home/ros/indigo
+sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo
 
-sudo ln -sf /home/ros /opt/
+#cd ~/ros_catkin_ws/build_isolated/
+#sudo chown -R px4 .
+
+#sudo ln -sf /home/ros /opt/
 
 echo "*** Updating .profile and .bashrc ***"
-echo "source /home/ros/indigo/setup.bash" >> ~/.profile
+echo "source /opt/ros/indigo/setup.bash" >> ~/.profile
 source ~/.profile
 
 echo "source ~/ros_catkin_ws/devel_isolated/setup.bash" >> ~/.bashrc

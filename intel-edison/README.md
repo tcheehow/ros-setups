@@ -41,7 +41,13 @@ tmpfs            481M     0  481M   0% /tmp
 For some reasons, the /home partition is not mounted after the first boot. To  fix this issue, add the follow to the bottom of `/etc/fstab`  
 
 ```
-/dev/disk/by-partlabel/home     /home       auto    noauto,comment=systemd.automount,nosuid,nodev,noatime,discard     1   1
+/dev/disk/by-partlabel/home     /home       auto    defaults     1   1
+```
+
+Resize the rootfs image to partition Size
+
+```
+resize2fs /dev/mmcblk0p5
 ```
 
 ## Post ROS Install
@@ -138,6 +144,7 @@ deb http://ftp.sg.debian.org/debian jessie-backports main
 
 ```
 apt-get -y update
+apt-get -f install
 apt-get -y upgrade
 ```
 
@@ -172,10 +179,10 @@ apt-get -y install sudo less
 `usermod -aG dialout px4`
 
 ## Remove "edison" User
-`deluser --remove-home edison`
+`deluser --remove-home user`
 
 ## Add host
-`nano /etc/hosts` and add below localhost `127.0.0.1 ubilinux`
+`nano /etc/hosts` and add below localhost `127.0.0.1 edison`
 
 Login as px4 to continue.
 
@@ -191,13 +198,13 @@ cd ros-setups/intel-edison/
 ./install_ros.sh
 ```
 
-If all went well you should have a ROS installtion. Hook your Edison up to the Pixhawk and run a test. See this page for instructions: https://pixhawk.org/peripherals/onboard_computers/intel_edison
+If all went well you should have a ROS installation. Hook your Edison up to the Pixhawk and run a test. See this page for instructions: https://pixhawk.org/peripherals/onboard_computers/intel_edison
 
 # Install Edison MRAA Libraries
 
 Follow the instructions here to install the latest swig for mraa http://swig.org/svn.html
 
-To build swig, `apt-get install bison`.
+To build swig, `apt-get install bison automake autoconf build-essential g++`.
 
 Follow the instructions on https://learn.sparkfun.com/tutorials/installing-libmraa-on-ubilinux-for-edison
 
@@ -244,3 +251,29 @@ and once it is running activate offboard control on your RC transmitter.
 ## Freeing up Space on the Root Partition
 
 Once again we will remove unneeded files from the root partition. You can delete the files in root's home directory (that's /root) or move them to the home partition.
+
+## Mounting the Edison as a mass storage using Win-sshfs
+
+**Note this is for Window Users only!**
+
+1. Download Dokan 0.7.4 from here : https://github.com/dokan-dev/dokany/releases?after=v0.8.0
+
+2. Download Win-sshfs 1.5.12.8 release from: https://github.com/Foreveryone-cz/win-sshfs/releases
+
+3. Install Dokan 0.7.4 (restart is required after installation)
+
+   - If Visual C++ Redistributable Packages for Visual Studio 2013 (x86) is not installed,
+
+     **Download the x86 redistributable installer!**
+
+   - Install Visual C++ Redistributable Packages for Visual Studio 2013 (x86).
+
+4. Unpack the Win-sshfs 1.5.12.8 zip file and run Win-sshfs
+
+5. Fill Win-sshfs according to the picture.
+
+   ![win-sshfs](C:\Users\AIR LAB\Documents\win-sshfs.png)
+
+6. Replace Host with the IP address of your Edison
+
+7. Click mount. The Edison should show as a removable drive on your computer.
