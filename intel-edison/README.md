@@ -247,8 +247,9 @@ in /mraa/src/python/python3/CMakeLists.txt
 
 # Setting I2C Permission with udev rules
 
-Create a new udev rule `sudo nano /etc/udev/rules.d/edison.rules`
-Add in `KERNEL="i2c*", GROUP="dialout", MODE="660"`
+```
+sudo usermode -aG i2c edison
+```
 Reboot the edison for udev rules to take effect.
 
 # Python Flight App
