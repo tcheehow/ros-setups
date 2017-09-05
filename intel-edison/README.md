@@ -79,6 +79,14 @@ You will need more space on the home partition. Run the following commands:
 
 `exit`
 
+## Creating Catkin PACKAGE
+
+`mkdir ~/catkin_ws/src`
+`cd ~/catkin_ws/`
+`catkin_make`
+
+If facing CMAKE error, `cd ~/catkin_ws` and `sudo chown -R edison:users .`
+
 ## Wifi
 
 Run `sudo cp /etc/network/interfaces /etc/network/interfaces.home`
