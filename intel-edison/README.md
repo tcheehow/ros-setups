@@ -252,6 +252,13 @@ sudo usermode -aG i2c edison
 ```
 Reboot the edison for udev rules to take effect.
 
+# Setting Serial Permission with udev rules
+
+```
+sudo usermode -aG dialout edison
+```
+Reboot the edison for udev rules to take effect.
+
 # Python Flight App
 
 Once you have a functional ROS setup you can *very carefully* perform an offboard flight using the setpoint_demo.py script. This script assumes that you have already successfully run `roslaunch mavros px4.launch`.
