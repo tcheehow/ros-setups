@@ -70,15 +70,14 @@ tmpfs            481M  6.6M  474M   2% /tmp
 
 ## Freeing up Space on the Root Partition
 
-You will need more space on the root partition. Run the following commands:
+You will need more space on the home partition. Run the following commands:
 
-`mv /var/cache /home/`  
-`ln -s /home/cache /var/cache`  
+`sudo su`
 
-and
+`mv /usr/share ~/.edison/`  
+`ln -s ~/.edison/ /usr/share`  
 
-`mv /usr/share /home/`  
-`ln -s /home/share /var/share`  
+`exit`
 
 ## Wifi
 
