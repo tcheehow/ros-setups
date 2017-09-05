@@ -74,8 +74,8 @@ You will need more space on the home partition. Run the following commands:
 
 `sudo su`
 
-`mv /usr/share ~/.edison/`  
-`ln -s ~/.edison/ /usr/share`  
+`mv /usr/share /opt/.edison/`  
+`ln -s /opt/.edison/ /usr/share`  
 
 `exit`
 
