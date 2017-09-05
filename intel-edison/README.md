@@ -87,6 +87,14 @@ You will need more space on the home partition. Run the following commands:
 
 If facing CMAKE error, `cd ~/catkin_ws` and `sudo chown -R edison:users .`
 
+## Install AIR, MAVROS_EXTRAS, GEOMETRY
+
+```
+git clone https://github.com/tcheehow/air.git
+git clone -b edison https://github.com/tcheehow/mavros.git
+git clone -b indigo-devel https://github.com/ros/geometry.git
+```
+
 ## Wifi
 
 Run `sudo cp /etc/network/interfaces /etc/network/interfaces.home`
