@@ -120,6 +120,7 @@ auto wlan0
 iface wlan0 inet dhcp  
     wpa-ssid ExampleWifi
     wpa-psk 81088ba3b4b387ea4d22a4ad369ffa42f4966d2f3d61f6c65cdc001460239dc4
+post-up iwconfig wlan0 power off #disable edison power management    
 ```
 
 Create script `sudo nano ~/homenet.sh` and `sudo nano ~/worknet.sh`
