@@ -8,7 +8,7 @@ Connect one USB cable to the cosole port and then start your temrminal app (see 
 
 # Flash Debian
 
-To build Debian Jessie carefully follow the instruction from ros-setups/README.md
+Download jubilinux from http://www.jubilinux.org/
 
 If Windows is used, dfu-util is required. Download the latest version from this page:
 http://dfu-util.sourceforge.net/releases/
@@ -38,20 +38,8 @@ tmpfs            481M     0  481M   0% /tmp
 /dev/mmcblk0p10  1.3G  2.0M  1.3G   1% /home
 ```
 
-For some reasons, the /home partition is not mounted after the first boot. To  fix this issue, add the follow to the bottom of `/etc/fstab`  
-
-```
-/dev/disk/by-partlabel/home     /home       auto    defaults     1   1
-```
-
-Resize the rootfs image to partition Size
-
-```
-resize2fs /dev/mmcblk0p5
-```
-
 ## Post ROS Install
-Once ROS is installed there won't be much space left on the root partition. TODO: Add howto on freeing up space.
+Once ROS is installed there won't be much space left on the home partition. 
 
 ```
 Filesystem       Size  Used Avail Use% Mounted on
@@ -68,7 +56,7 @@ tmpfs            481M  6.6M  474M   2% /tmp
 
 # Post Installation Steps
 
-## Freeing up Space on the Root Partition
+## Freeing up Space on the Home Partition
 
 You will need more space on the home partition. Run the following commands:
 
@@ -188,19 +176,14 @@ apt-get -y install git
 apt-get -y install sudo less
 ```
 
-## Add User
-`adduser px4`
-`passwd px4` (set the password to px4)
-`usermod -aG sudo px4`
-`usermod -aG dialout px4`
+## User
 
-## Remove "edison" User
-`deluser --remove-home user`
+Always login as root due to permission issues for serial and i2c.
 
 ## Add host
 `nano /etc/hosts` and add below localhost `127.0.0.1 edison`
 
-Login as px4 to continue.
+Login as root to continue.
 
 # ROS/MAVROS Installation
 
