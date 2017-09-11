@@ -30,7 +30,7 @@ sudo pip install rosdep rosinstall_generator wstool rosinstall
 
 echo "*** Fix some permission issues"
 cd ~
-sudo chown -R px4 .
+sudo chown -R edison:users .
 
 echo "*** ROSDEP ***"
 sudo rosdep init
@@ -80,7 +80,7 @@ echo “About to start some heavy building. Go have a looong coffee break.”
 echo “******************************************************************”
 
 echo "*** Building ROS ***"
-sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo
+sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo -j1
 
 #cd ~/ros_catkin_ws/build_isolated/
 #sudo chown -R px4 .
