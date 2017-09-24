@@ -19,7 +19,7 @@ Connect to the console with 115000 8N1, for example:
 
 `screen /dev/USB0 115200 8N1`
 
-and login as root (password: edison)
+and login as edison (password: edison)
 
 
 ## Post Debian Install
@@ -27,15 +27,16 @@ After Debian has been installed you will end up with the following partitions:
 
 ```
 Filesystem       Size  Used Avail Use% Mounted on
-rootfs           1.4G  813M  503M  62% /
-/dev/root        1.4G  813M  503M  62% /
-devtmpfs         480M     0  480M   0% /dev
-tmpfs             97M  292K   96M   1% /run
+/dev/root        1.4G  242M  1.1G  19% /
+devtmpfs         481M     0  481M   0% /dev
+tmpfs            481M     0  481M   0% /dev/shm
+tmpfs            481M  6.7M  474M   2% /run
 tmpfs            5.0M     0  5.0M   0% /run/lock
-tmpfs            193M     0  193M   0% /run/shm
+tmpfs            481M     0  481M   0% /sys/fs/cgroup
 tmpfs            481M     0  481M   0% /tmp
-/dev/mmcblk0p7    32M  5.3M   27M  17% /boot
-/dev/mmcblk0p10  1.3G  2.0M  1.3G   1% /home
+/dev/mmcblk0p7    32M  4.8M   28M  16% /boot
+/dev/mmcblk0p10  1.3G  631M  660M  49% /home
+tmpfs             97M     0   97M   0% /run/user/1002
 ```
 
 ## Post ROS Install
@@ -67,26 +68,10 @@ You will need more space on the home partition. Run the following commands:
 
 `exit`
 
-## Creating Catkin PACKAGE
-
-`mkdir ~/catkin_ws/src`
-`cd ~/catkin_ws/`
-`catkin_make`
-
-If facing CMAKE error, `cd ~/catkin_ws` and `sudo chown -R edison:users .`
-
-## Install AIR, MAVROS_EXTRAS, GEOMETRY
-
-```
-git clone https://github.com/tcheehow/air.git
-git clone -b edison https://github.com/tcheehow/mavros.git
-git clone -b indigo-devel https://github.com/ros/geometry.git
-```
-
 ## Wifi
 
 Run `sudo cp /etc/network/interfaces /etc/network/interfaces.home`
-Run `sudo cp /etc/network/interfaces /etc/network/interfaces.home`
+Run `sudo cp /etc/network/interfaces /etc/network/interfaces.work`
 
 Run `wpa_passphrase your-ssid your-wifi-password` to generate pka.
 `cd /etc/network`
@@ -147,9 +132,9 @@ deb http://ftp.sg.debian.org/debian jessie-backports main
 ```
 
 ```
-apt-get -y update
-apt-get -f install
-apt-get -y upgrade
+sudo apt-get -y update
+sudo apt-get -f install
+sudo apt-get -y upgrade
 ```
 
 ## Locales
@@ -174,6 +159,22 @@ Note that if you receive warning messages about missing or wrong languages this 
 ```
 apt-get -y install git
 apt-get -y install sudo less
+```
+
+## Creating Catkin PACKAGE
+
+`mkdir ~/catkin_ws/src`
+`cd ~/catkin_ws/`
+`catkin_make`
+
+If facing CMAKE error, `cd ~/catkin_ws` and `sudo chown -R edison:users .`
+
+## Install AIR, MAVROS_EXTRAS, GEOMETRY
+
+```
+git clone https://github.com/tcheehow/air.git
+git clone -b edison https://github.com/tcheehow/mavros.git
+git clone -b indigo-devel https://github.com/ros/geometry.git
 ```
 
 ## User
