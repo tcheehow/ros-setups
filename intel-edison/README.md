@@ -236,6 +236,7 @@ First install i2c-tools to setup the /dev/i2c* with i2c permission
 
 ```
 sudo apt-get install i2c-tools
+sudo reboot
 sudo usermod -aG i2c edison
 ```
 Reboot the edison for udev rules to take effect.
