@@ -248,6 +248,70 @@ sudo usermod -aG dialout edison
 ```
 Reboot the edison for udev rules to take effect.
 
+# Setting Up Edison as AP
+
+References: https://github.com/ArduPilot/companion 
+
+```
+sudo su
+
+set -e
+set -x
+
+. config.env
+
+# the hardware must be told to go into AP mode:
+echo 2 | sudo dd of=/sys/module/bcm4334x/parameters/op_mode
+perl -pe 's/op_mode=4/op_mode=2/' -i /etc/modprobe.d/bcm4334x.conf
+
+test -e /etc/wpa_supplicant/wpa_supplicant.conf &&
+    mv -f /etc/wpa_supplicant/wpa_supplicant.conf{,-unused}
+systemctl stop wpa_supplicant
+systemctl disable wpa_supplicant
+killall -9 /sbin/wpa_supplicant || true
+
+# most of this is common:
+apt-get -y install dnsmasq haveged
+
+# stop dnsmasq from running outside of where we want it to:
+sudo systemctl disable dnsmasq
+
+# Create Access Point
+APNAME="WiFiAP"
+SSID="ardupilot"
+KEY="enRouteArduPilot"
+
+# add IP address range to /etc/dnsmasq.conf
+dd of=/etc/dnsmasq.d/$APNAME.conf <<EOF
+interface=wlan0
+dhcp-range=10.0.1.129,10.0.1.138,12h
+EOF
+
+systemctl disable networking
+systemctl enable NetworkManager
+systemctl start NetworkManager
+systemctl stop networking
+sudo systemctl disable dnsmasq
+
+nmcli connection add type wifi ifname wlan0 con-name $APNAME ssid $SSID
+nmcli connection modify $APNAME connection.autoconnect yes
+nmcli connection modify $APNAME 802-11-wireless.mode ap
+nmcli connection modify $APNAME 802-11-wireless.band bg
+nmcli connection modify $APNAME ipv4.method shared
+nmcli connection modify $APNAME wifi-sec.key-mgmt wpa-psk
+nmcli connection modify $APNAME ipv4.addresses 10.0.1.128/24
+nmcli connection modify $APNAME wifi-sec.psk "$KEY"
+nmcli connection up $APNAME
+
+test -e /etc/wpa_supplicant/wpa_supplicant.conf &&
+    mv -f /etc/wpa_supplicant/wpa_supplicant.conf{,-unused}
+systemctl stop wpa_supplicant
+systemctl disable wpa_supplicant
+killall -9 /sbin/wpa_supplicant || true
+```
+
+
+
 # Python Flight App
 
 Once you have a functional ROS setup you can *very carefully* perform an offboard flight using the setpoint_demo.py script. This script assumes that you have already successfully run `roslaunch mavros px4.launch`.
