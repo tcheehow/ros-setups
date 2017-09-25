@@ -322,6 +322,8 @@ systemctl stop wpa_supplicant
 systemctl disable wpa_supplicant
 killall -9 /sbin/wpa_supplicant || true
 ```
+
+Uncomment the wlan0 setups in /etc/network/interface
 # Python Flight App
 
 Once you have a functional ROS setup you can *very carefully* perform an offboard flight using the setpoint_demo.py script. This script assumes that you have already successfully run `roslaunch mavros px4.launch`.
