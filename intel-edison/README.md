@@ -230,17 +230,20 @@ in /mraa/src/python/python3/CMakeLists.txt
 ```
 
 
-# Setting I2C Permission with udev rules
+# Setting I2C Permission
+
+First install i2c-tools to setup the /dev/i2c* with i2c permission
 
 ```
-sudo usermode -aG i2c edison
+sudo apt-get install i2c-tools
+sudo usermod -aG i2c edison
 ```
 Reboot the edison for udev rules to take effect.
 
 # Setting Serial Permission with udev rules
 
 ```
-sudo usermode -aG dialout edison
+sudo usermod -aG dialout edison
 ```
 Reboot the edison for udev rules to take effect.
 
