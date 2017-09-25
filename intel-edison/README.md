@@ -310,8 +310,18 @@ systemctl disable wpa_supplicant
 killall -9 /sbin/wpa_supplicant || true
 ```
 
+Add the following to the end of /etc/rc.local
 
+```
+echo 2 | sudo dd of=/sys/module/bcm4334x/parameters/op_mode
+perl -pe 's/op_mode=4/op_mode=2/' -i /etc/modprobe.d/bcm4334x.conf
 
+test -e /etc/wpa_supplicant/wpa_supplicant.conf &&
+    mv -f /etc/wpa_supplicant/wpa_supplicant.conf{,-unused}
+systemctl stop wpa_supplicant
+systemctl disable wpa_supplicant
+killall -9 /sbin/wpa_supplicant || true
+```
 # Python Flight App
 
 Once you have a functional ROS setup you can *very carefully* perform an offboard flight using the setpoint_demo.py script. This script assumes that you have already successfully run `roslaunch mavros px4.launch`.
