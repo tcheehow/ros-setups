@@ -175,6 +175,9 @@ If facing CMAKE error, `cd ~/catkin_ws` and `sudo chown -R edison:users .`
 git clone https://github.com/tcheehow/air.git
 git clone -b edison https://github.com/tcheehow/mavros.git
 git clone -b indigo-devel https://github.com/ros/geometry.git
+git clone https://github.com/tcheehow/teraranger_array.git
+git clone https://github.com/ros/dynamic_reconfigure.git
+git clone https://github.com/wjwwood/serial
 ```
 
 ## User
