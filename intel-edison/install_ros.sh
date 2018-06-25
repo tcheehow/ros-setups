@@ -13,17 +13,17 @@ echo "*** Update sources.list ***"
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu jessie main" > /etc/apt/sources.list.d/ros-latest.list'
 
 echo "*** Get ROS and Raspian keys ***"
-sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+#sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
 #wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
 wget http://archive.raspbian.org/raspbian.public.key -O - | sudo apt-key add -
+wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
 
 echo "*** Update the OS ***"
 sudo apt-get -y update
 sudo apt-get -y upgrade
 
 echo "*** Install required OS packages ***"
-sudo apt-get -y install pkg-config
-sudo apt-get -y install python-setuptools python-pip python-yaml python-argparse python-distribute python-docutils python-dateutil python-six
+sudo apt-get install python-pip python-setuptools python-yaml python-distribute python-docutils python-dateutil python-six
 
 echo "*** Install required ROS packages ***"
 sudo pip install rosdep rosinstall_generator wstool rosinstall
@@ -63,9 +63,15 @@ sudo apt-get -y update
 
 echo "*** Install console bridge ***"
 cd ~/ros_catkin_ws/external_src
-sudo apt-get -y build-dep console-bridge
-apt-get -y source -b console-bridge
-sudo dpkg -i libconsole-bridge0.2*.deb libconsole-bridge-dev*.deb
+#sudo apt-get -y build-dep console-bridge
+#apt-get -y source -b console-bridge
+#sudo dpkg -i libconsole-bridge0.2*.deb libconsole-bridge-dev*.deb
+sudo apt-get install libboost-system-dev libboost-thread-dev
+git clone https://github.com/ros/console_bridge.git
+cd console_bridge
+cmake .
+sudo checkinstall make install
+#sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo
 
 echo "*** Install liblz4-dev ***"
 sudo apt-get -y install liblz4-dev
