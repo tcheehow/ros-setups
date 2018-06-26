@@ -13,7 +13,7 @@ echo "*** Update sources.list ***"
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu jessie main" > /etc/apt/sources.list.d/ros-latest.list'
 
 echo "*** Get ROS and Raspian keys ***"
-#sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
 #wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
 wget http://archive.raspbian.org/raspbian.public.key -O - | sudo apt-key add -
 wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
@@ -43,11 +43,13 @@ echo "*** rosinstall ***"
 #   This will install only mavros and not mavros-extras (no image
 #   support which the Edison can’t really handle well anyway).
 rosinstall_generator ros_comm mavros --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-ros_comm-wet.rosinstall
+#rosinstall_generator ros_comm mavros --rosdistro indigo --deps --wet-only --tar > indigo-ros_comm-wet.rosinstall
 
 echo "*** wstool ***"
 sudo wstool init src -j3 indigo-ros_comm-wet.rosinstall
 
 while [ $? != 0 ]; do
+  # run this afew times to make sure all packages are downloaded
   echo "*** wstool - download failures, retrying ***"
   sudo wstool update -t src -j3
 done
