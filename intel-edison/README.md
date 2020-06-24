@@ -8,7 +8,7 @@ Connect one USB cable to the cosole port and then start your temrminal app (see 
 
 # Flash Debian
 
-To build Debian Jessie carefully follow the instruction from ros-setups/README.md
+Download jubilinux from http://www.jubilinux.org/
 
 If Windows is used, dfu-util is required. Download the latest version from this page:
 http://dfu-util.sourceforge.net/releases/
@@ -19,7 +19,7 @@ Connect to the console with 115000 8N1, for example:
 
 `screen /dev/USB0 115200 8N1`
 
-and login as root (password: edison)
+and login as edison (password: edison)
 
 
 ## Post Debian Install
@@ -27,31 +27,20 @@ After Debian has been installed you will end up with the following partitions:
 
 ```
 Filesystem       Size  Used Avail Use% Mounted on
-rootfs           1.4G  813M  503M  62% /
-/dev/root        1.4G  813M  503M  62% /
-devtmpfs         480M     0  480M   0% /dev
-tmpfs             97M  292K   96M   1% /run
+/dev/root        1.4G  242M  1.1G  19% /
+devtmpfs         481M     0  481M   0% /dev
+tmpfs            481M     0  481M   0% /dev/shm
+tmpfs            481M  6.7M  474M   2% /run
 tmpfs            5.0M     0  5.0M   0% /run/lock
-tmpfs            193M     0  193M   0% /run/shm
+tmpfs            481M     0  481M   0% /sys/fs/cgroup
 tmpfs            481M     0  481M   0% /tmp
-/dev/mmcblk0p7    32M  5.3M   27M  17% /boot
-/dev/mmcblk0p10  1.3G  2.0M  1.3G   1% /home
-```
-
-For some reasons, the /home partition is not mounted after the first boot. To  fix this issue, add the follow to the bottom of `/etc/fstab`  
-
-```
-/dev/disk/by-partlabel/home     /home       auto    defaults     1   1
-```
-
-Resize the rootfs image to partition Size
-
-```
-resize2fs /dev/mmcblk0p5
+/dev/mmcblk0p7    32M  4.8M   28M  16% /boot
+/dev/mmcblk0p10  1.3G  631M  660M  49% /home
+tmpfs             97M     0   97M   0% /run/user/1002
 ```
 
 ## Post ROS Install
-Once ROS is installed there won't be much space left on the root partition. TODO: Add howto on freeing up space.
+Once ROS is installed there won't be much space left on the home partition. 
 
 ```
 Filesystem       Size  Used Avail Use% Mounted on
@@ -68,7 +57,7 @@ tmpfs            481M  6.6M  474M   2% /tmp
 
 # Post Installation Steps
 
-## Freeing up Space on the Root Partition
+## Freeing up Space on the Home Partition
 
 You will need more space on the home partition. Run the following commands:
 
@@ -79,26 +68,10 @@ You will need more space on the home partition. Run the following commands:
 
 `exit`
 
-## Creating Catkin PACKAGE
-
-`mkdir ~/catkin_ws/src`
-`cd ~/catkin_ws/`
-`catkin_make`
-
-If facing CMAKE error, `cd ~/catkin_ws` and `sudo chown -R edison:users .`
-
-## Install AIR, MAVROS_EXTRAS, GEOMETRY
-
-```
-git clone https://github.com/tcheehow/air.git
-git clone -b edison https://github.com/tcheehow/mavros.git
-git clone -b indigo-devel https://github.com/ros/geometry.git
-```
-
 ## Wifi
 
 Run `sudo cp /etc/network/interfaces /etc/network/interfaces.home`
-Run `sudo cp /etc/network/interfaces /etc/network/interfaces.home`
+Run `sudo cp /etc/network/interfaces /etc/network/interfaces.work`
 
 Run `wpa_passphrase your-ssid your-wifi-password` to generate pka.
 `cd /etc/network`
@@ -159,9 +132,9 @@ deb http://ftp.sg.debian.org/debian jessie-backports main
 ```
 
 ```
-apt-get -y update
-apt-get -f install
-apt-get -y upgrade
+sudo apt-get -y update
+sudo apt-get -f install
+sudo apt-get -y upgrade
 ```
 
 ## Locales
@@ -188,19 +161,33 @@ apt-get -y install git
 apt-get -y install sudo less
 ```
 
-## Add User
-`adduser px4`
-`passwd px4` (set the password to px4)
-`usermod -aG sudo px4`
-`usermod -aG dialout px4`
+## Creating Catkin PACKAGE
 
-## Remove "edison" User
-`deluser --remove-home user`
+`mkdir ~/catkin_ws/src`
+`cd ~/catkin_ws/`
+`catkin_make`
+
+If facing CMAKE error, `cd ~/catkin_ws` and `sudo chown -R edison:users .`
+
+## Install AIR, MAVROS_EXTRAS, GEOMETRY
+
+```
+git clone https://github.com/tcheehow/air.git
+git clone -b edison https://github.com/tcheehow/mavros.git
+git clone -b indigo-devel https://github.com/ros/geometry.git
+git clone https://github.com/tcheehow/teraranger_array.git
+git clone https://github.com/ros/dynamic_reconfigure.git
+git clone https://github.com/wjwwood/serial
+```
+
+## User
+
+Always login as root due to permission issues for serial and i2c.
 
 ## Add host
 `nano /etc/hosts` and add below localhost `127.0.0.1 edison`
 
-Login as px4 to continue.
+Login as root to continue.
 
 # ROS/MAVROS Installation
 
@@ -246,19 +233,48 @@ in /mraa/src/python/python3/CMakeLists.txt
 ```
 
 
-# Setting I2C Permission with udev rules
+# Setting I2C Permission
+
+First install i2c-tools to setup the /dev/i2c* with i2c permission
 
 ```
-sudo usermode -aG i2c edison
+sudo apt-get install i2c-tools
+sudo reboot
+sudo usermod -aG i2c edison
 ```
 Reboot the edison for udev rules to take effect.
 
 # Setting Serial Permission with udev rules
 
 ```
-sudo usermode -aG dialout edison
+sudo usermod -aG dialout edison
 ```
 Reboot the edison for udev rules to take effect.
+
+# Setting Up Edison as AP
+
+References: https://github.com/ArduPilot/companion 
+
+
+In `etc/default/hostapd`, uncomment DAE_CONF and add `/etc/hostapd/hostapd.conf` to it, it should look like 
+```
+DAE_CONF="/etc/hostapd/hostapd.conf"
+```
+
+```
+# uncomment to 4 lines in /etc/network/interfaces for hostapd and 
+# comment out the wlan0 setup for usual internet access
+```
+
+Add the following to the end of /etc/rc.local
+
+```
+ifdown wlan0
+/etc/init.d/hostapd restart
+ifup wlan0
+```
+
+in `/etc/init.d/hostapd` add `/etc/hostapd/hostapd.conf` to DAE_CONF
 
 # Python Flight App
 
